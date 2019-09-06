@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Space Conquest</title>
+	    <script>
+			function load() {
+				init();
+			}
+			window.onload = load;
+	</script>
+	<link rel="stylesheet" href="styles\modal.css">
+	<link rel="stylesheet" href="styles\styles.css">
+</head>
+<body>
+	<script src="scripts\utils.js"></script>
+	<script src="scripts\models.js"></script>
+	<script src="scripts\game.js"></script>
+	<script src="scripts\modal.js"></script>
+	<div class="row" style="display: flex; flex-direction: row;">
+		<div>
+			<canvas id="myCanvas" width="600" height="600"></canvas>
+		</div>
+		<div class="sidebar">
+			<div class="panel-header">
+				<h3> Player</h2>
+			</div>
+			<div class="panel-body">
+				Player: <input type="text" name="playerName" value=""><br>
+				Credits: <input type="text" name="credits" value=""><br>
+			</div>
+			<div class="panel-header">
+				<h3> Planet</h2>
+			</div>
+			<div class="panel-body">
+				Planet: <input type="text" name="planetName" value=""><br>
+				Owner: <input type="text" name="ownerName" value=""><br>
+				Income/Turn: <input type="text" name="incomePerTurn" value=""><br>
+				Tech Level: <input type="text" name="techLevel" value=""><br>
+				Ships Red: <input type="text" name="shipsRed" value=""><br>
+				Ships Blue: <input type="text" name="shipsBlue" value=""><br>
+				Ships Native: <input type="text" name="shipsNative" value=""><br>
+
+				<div style="display: flex; flex-direction: row; margin:0px;">
+					<div>
+						<input type="button" name="buildShip" value="Build Ship" id="modal_opener"><br>
+						<input type="button" name="sendShips" value="Send Ships" id="modal_opener"><br>
+					</div>
+					<div>
+						<input type="button" name="upgradeTech" value="Upgrade Tech" id="modal_opener"><br>
+						<input type="button" name="decreaseTech" value="Decrease Tech" id="modal_opener"><br>
+					</div>
+				</div>
+			</div>
+			<input type="button" name="startGameEndTurn" value="Start Game" onclick="advanceOneTurn()"><br>
+			Turn: <input type="text" name="turnNumber" value=""><br>
+		</div>
+	</div>
+
+	<div class="modal modal_buildShips" style="display: none">
+		<div class="overlay"></div>
+		<div class="modal_content">
+			<!-- Dynamic Section -->
+			<h2>Build Ships</h2>
+
+			Fighters:
+			<div class="slidecontainer">
+				<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+				<p>Value: <span id="demo"></span></p>
+			</div>
+
+			<input type="button" value="Build">
+
+			<!-- End of Dynamic Section -->
+			<button title="Close" class="close_modal">
+			<span class="fas fa-times">X</span>
+			</button>
+		</div>
+	</div>
+
+	<div class="modal modal_sendShips" style="display: none">
+			<div class="overlay"></div>
+			<div class="modal_content">
+				<!-- Dynamic Section -->
+				<h2>Send Ships</h2>
+	
+				<!-- End of Dynamic Section -->
+				<button title="Close" class="close_modal">
+				<span class="fas fa-times">X</span>
+				</button>
+			</div>
+		</div>
+
+</body>
+</html>

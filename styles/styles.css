@@ -1,0 +1,45 @@
+
+* { 
+    padding: 0;
+    margin: 5px; 
+    }
+
+input {
+    margin:5px 0px; 
+    }
+
+canvas {
+    background: #eee;
+    display: block;
+    margin: 0 auto;
+    }
+
+.sidebar {
+    width:600px;
+    height:600px;
+    }
+
+
+.panel-header {
+    width:100%;
+    background:rgb(158, 145, 145);
+    margin:0px;
+    padding:2px;
+    border:solid;
+    border-width: 1px;
+    border-color: darkgray;
+}
+
+.panel-body {
+    width:100%;
+    background: white;
+    margin:0px;
+    padding:2px;
+    border:solid;
+    border-width: 1px;
+    border-color: darkgray;
+}
+
+h2 {
+    margin: 0px;
+}
