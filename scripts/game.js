@@ -20,9 +20,12 @@ var computerNeutralId = 'Native';
 var players = [];
 var longestPossiblePath = distance(0, 0, maxX, maxY);
 var shipTypes = [new ShotGunBoatShip(), new FighterShip()];
+var modals = MODAL_MODULE;
 
 function init() {
-	init_modal();
+	modals.register_modal('buildShip', '.modal_buildShips');
+	modals.register_modal('sendShips', '.modal_sendShips');
+	modals.init_modal();
 
 	//Make the canvas and get the context
 	canvas = document.getElementById("myCanvas");
@@ -61,7 +64,7 @@ function init() {
 
 	//Initialize buttons
 	document.getElementsByName("buildShip")[0].disabled = true;
-	document.getElementsByName("sendShips")[0].disabled = true;
+	//document.getElementsByName("sendShips")[0].disabled = true;
 	document.getElementsByName("upgradeTech")[0].disabled = true;
 	document.getElementsByName("decreaseTech")[0].disabled = true;
 	

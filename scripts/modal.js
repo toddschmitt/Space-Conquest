@@ -1,8 +1,8 @@
-var registered_modals = [];
+var MODAL_MODULE = (function () {
+    var modal_module = {};
+    var registered_modals = [];
+    var current_open_modal = null;
 
-function init_modal() {
-    var btn = document.getElementById('modal_opener');
-    
     function attachModalListeners(modalElm) {
         modalElm.querySelector('.close_modal').addEventListener('click', hideAllModals);
         modalElm.querySelector('.overlay').addEventListener('click', hideAllModals);
@@ -17,26 +17,39 @@ function init_modal() {
         var sourceName = e.srcElement.name;
         var selector;
 
-        switch(sourceName){
-            case "buildShip": 
-                selector = ".modal_buildShips";
-                break;
-            case "sendShips":
-                selector = ".modal_sendShips";
-                break;
-        }
+        selector = registered_modals.filter((m) => m.elementName === sourceName)[0].selector;
 
         var modal = document.querySelector(selector);
+        current_open_modal = modal;
 
         modal.style.display = 'block';
         attachModalListeners(modal);
     }
 
     function hideAllModals() {
-        var modal = document.querySelector(".modal");
-        modal.style.display = 'none';
-        detachModalListeners(modal);  
+        current_open_modal.style.display = 'none';    
+        detachModalListeners(current_open_modal);
+        current_open_modal = null; 
     }
 
-    btn.addEventListener('click', showModal);
-}
+    
+    
+    //Public Section
+    function register_modal(elementName, selector, callbackfn) {
+        registered_modals.push({'elementName': elementName, 'selector': selector, 'callbackfn': callbackfn});
+    }
+
+    function init_modal() {
+        var btn = document.getElementsByClassName('modal_opener');
+        
+        [...btn].forEach(element => {
+            element.addEventListener('click', showModal);
+        });
+    }
+    
+    modal_module.init_modal = init_modal;
+    modal_module.register_modal = register_modal;
+    return modal_module;
+}());
+
+
