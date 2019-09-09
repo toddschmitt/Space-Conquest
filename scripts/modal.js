@@ -16,14 +16,16 @@ var MODAL_MODULE = (function () {
     function showModal(e) {
         var sourceName = e.srcElement.name;
         var selector;
-
-        selector = registered_modals.filter((m) => m.elementName === sourceName)[0].selector;
+        var thisModal = registered_modals.filter((m) => m.elementName === sourceName)[0];
+        selector = thisModal.selector;
 
         var modal = document.querySelector(selector);
         current_open_modal = modal;
 
         modal.style.display = 'block';
+        
         attachModalListeners(modal);
+        thisModal.onOpen();
     }
 
     function hideAllModals() {
@@ -35,8 +37,8 @@ var MODAL_MODULE = (function () {
     
     
     //Public Section
-    function register_modal(elementName, selector, callbackfn) {
-        registered_modals.push({'elementName': elementName, 'selector': selector, 'callbackfn': callbackfn});
+    function register_modal(elementName, selector, onOpen, onClose) {
+        registered_modals.push({'elementName': elementName, 'selector': selector, 'onOpen': onOpen, 'onClose': onClose});
     }
 
     function init_modal() {

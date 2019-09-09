@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="utf-8" />
-    <title>Space Conquest</title>
-	    <script>
-			function load() {
-				init();
-			}
-			window.onload = load;
+	<meta charset="utf-8" />
+	<title>Space Conquest</title>
+	<script>
+		function load() {
+			init();
+		}
+		window.onload = load;
 	</script>
 	<link rel="stylesheet" href="styles\modal.css">
 	<link rel="stylesheet" href="styles\styles.css">
 </head>
+
 <body>
 	<script src="scripts\utils.js"></script>
 	<script src="scripts\models.js"></script>
 	<script src="scripts\modal.js"></script>
+	<script src="scripts\drawing.js"></script>
 	<script src="scripts\game.js"></script>
 	<div class="row" style="display: flex; flex-direction: row;">
 		<div>
@@ -43,12 +46,16 @@
 
 				<div style="display: flex; flex-direction: row; margin:0px;">
 					<div>
-						<input type="button" name="buildShip" value="Build Ship" class="modal_opener"><br>
-						<input type="button" name="sendShips" value="Send Ships" class="modal_opener"><br>
+						<button name="buildShip" title="Build Ship" class="modal_opener button button-sm">Build
+							Ship</button>
+						<button name="sendShips" title="Send Ships" class="modal_opener button button-sm">Send
+							Ships</button>
 					</div>
 					<div>
-						<input type="button" name="upgradeTech" value="Upgrade Tech" class="modal_opener"><br>
-						<input type="button" name="decreaseTech" value="Decrease Tech" class="modal_opener"><br>
+						<button name="upgradeTech" title="Upgrade Tech" class="modal_opener button button-sm">Upgrade
+							Tech</button>
+						<button name="decreaseTech" title="Decrease Tech" class="modal_opener button button-sm">Decrease
+							Tech</button>
 					</div>
 				</div>
 			</div>
@@ -61,35 +68,51 @@
 		<div class="overlay"></div>
 		<div class="modal_content">
 			<!-- Dynamic Section -->
-			<h2>Build Ships</h2>
-
-			Fighters:
-			<div class="slidecontainer">
-				<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-				<p>Value: <span id="demo"></span></p>
+			<div class="row" style="display: flex; flex-direction: row;">
+				<h2>Build Ships on</h2><span></span>
+				<h2 id="buildShipPlanet"></h2>
 			</div>
 
-			<input type="button" value="Build">
+			Credits: <input type="text" id="creditsBuildShips" value="" style="border: none;"><br>
+
+			Ship Type: <select id="buildShipSelect">
+				<option value="" disabled selected style="display:none;">-</option>
+			</select>
+			Ship Cost: <span id="shipCost"></span>
+			<div class="slidecontainer">
+				<input type="range" min="1" max="100" value="1" class="slider" id="myRange">
+				<p># to Build: <span id="shipBuildCount"></span></p>
+				<p>Cost to Build: <span id="shipBuildCount"></span></p>
+			</div>
+
+			<button title="Build" class="button button-md" id="buildShipButton">
+				<span>Build</span>
+			</button>
 
 			<!-- End of Dynamic Section -->
-			<button title="Close" class="close_modal">
-			<span class="fas fa-times">X</span>
-			</button>
+			<div class="modal_buttons">
+				<button title="Close" class="close_modal button button-sm">
+					<span>X</span>
+				</button>
+			</div>
 		</div>
 	</div>
 
 	<div class="modal modal_sendShips" style="display: none">
-			<div class="overlay"></div>
-			<div class="modal_content">
-				<!-- Dynamic Section -->
-				<h2>Send Ships</h2>
-	
-				<!-- End of Dynamic Section -->
-				<button title="Close" class="close_modal">
-				<span class="fas fa-times">X</span>
+		<div class="overlay"></div>
+		<div class="modal_content">
+			<!-- Dynamic Section -->
+			<h2>Send Ships</h2>
+
+			<!-- End of Dynamic Section -->
+			<div class="modal_buttons">
+				<button title="Close" class="close_modal button button-sm">
+					<span>X</span>
 				</button>
 			</div>
 		</div>
+	</div>
 
 </body>
+
 </html>

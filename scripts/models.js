@@ -1,17 +1,36 @@
-function Fleet(owner, location, remainingTransit, ships)
-{
-	this.owner = owner;
-	this.location = location;
-	this.remainingTransit = remainingTransit;
-	this.ships = ships;
+function Fleet(owner, location, remainingTransit, ships) {
+    this.owner = owner;
+    this.location = location;
+    this.remainingTransit = remainingTransit;
+    this.ships = ships;
 }
 
-function Ships(fighter, shotgunBoat){
-	this.fighter = fighter;
-	this.shotgunBoat = shotgunBoat;
+class Ships {
+    constructor(shipTypes) {
+        this.shipTypes = shipTypes;
+        this.shipCounts = {};
+        this.shipTypes.forEach((s) => {
+            this.shipCounts[s.name] = 0;
+        })
+    }
+
+    add(shipType, number) {
+        this.shipCounts[shipType] += number;
+    }
+
+    remove(shipType, number) {
+        this.shipCounts[shipType] += number;
+    }
+
+    toString() {
+        var fleetString = "";
+        this.shipTypes.forEach((s) => {
+            fleetString += s.abbreviation + ":" + this.shipCounts[s.name] + ",";
+        })
+    }
 }
 
-function Player(id){
+function Player(id) {
     this.id = id;
     this.credits = 0;
 
@@ -28,17 +47,17 @@ function Player(id){
 //     this.specialAttack = specialAttack;
 // }
 
-function SpaceLane(planetFrom, planetTo, transitTime)
-{
+function SpaceLane(planetFrom, planetTo, transitTime) {
     this.planetFrom = planetFrom;
     this.planetTo = planetTo;
     this.transitTime = transitTime;
 }
 
-class Ship{
-    constructor(count, name, attack, hp, phase, durability, cost, techLevel, specialAttack){
+class Ship {
+    constructor(count, name, abbreviation, attack, hp, phase, durability, cost, techLevel, specialAttack) {
         this.count = count;
         this.name = name;
+        this.abbreviation = abbreviation;
         this.attack = attack;
         this.hp = hp;
         this.phase = phase;
@@ -49,14 +68,14 @@ class Ship{
     }
 }
 
-class FighterShip extends Ship{
+class FighterShip extends Ship {
     constructor(count) {
-        super(count, "Fighter", 7, 5, 3, 5, 25, 7, 0);
+        super(count, "Fighter", "F", 7, 5, 3, 5, 25, 7, 0);
     }
 }
 
-class ShotGunBoatShip extends Ship{
+class ShotGunBoatShip extends Ship {
     constructor(count) {
-        super(count, "ShotgunBoat", 10, 3, 2, 5, 50, 7, 0);
+        super(count, "ShotgunBoat", "Sb", 10, 3, 2, 5, 50, 7, 0);
     }
 }
