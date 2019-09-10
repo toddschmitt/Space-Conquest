@@ -305,7 +305,8 @@ function onBuildShipModalOpen() {
 		var slider = document.getElementById("myRange");
 
 		var currentPlayerIndex = players.findIndex((p) => p.id === currentPlayer);
-		var selectedShipType = shipTypes.filter((s) => s.name === e.srcElement.value)[0];
+
+		var selectedShipType = shipTypes.filter((s) => s.name === select.options[select.selectedIndex].text)[0];
 		var totalCost = slider.value * selectedShipType.cost;
 
 		if (totalCost < players[currentPlayerIndex].credits) {
@@ -317,9 +318,13 @@ function onBuildShipModalOpen() {
 			//See if we have a fleet on this planet right now, if so add to that fleet
 			var myFleetHere = getCurrentPlayerFleetOnCurrentPlanet();
 			if (myFleetHere) {
-				myFleetHere
+				myFleetHere.ships.add(selectedShipType, parseInt(slider.value));
+			} else { //if not, make a new fleet at this planet
+				var ships = new Ships();
+				ships.add(selectedShipType, parseInt(slider.value));
+				var fleet = new Fleet(currentPlayer, selectedPlanetIndex, 0, ships);
+				fleets.push(fleet);
 			}
-			//if not, make a new fleet at this planet
 		}
 	}
 }
