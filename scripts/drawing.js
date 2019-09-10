@@ -90,9 +90,4 @@ function drawPlanet(planet, selected) {
 	ctx.textAlign = "center";
 	ctx.font = "12px Arial";
 	ctx.fillText(planet.name, planet.x, planet.y - 15);
-
-	// ctx.beginPath();
-	// ctx.strokeStyle = "blue";
-	// ctx.rect(planet.x - planetDiameter, planet.y - planetDiameter, planetDiameter * 2, planetDiameter * 2);
-	// ctx.stroke();
 }

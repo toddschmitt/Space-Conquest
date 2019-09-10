@@ -86,8 +86,8 @@ function mouseListener(e) {
 	var clickedPlanet = false;
 
 	for (var i = planets.length - 1, b; b = planets[i]; i--) {
-		if (x >= b.x - planetDiameter && x <= b.x + planetDiameter * 2 &&
-			y >= b.y - planetDiameter && y <= b.y + planetDiameter * 2) {
+		if (x >= b.x - planetDiameter && x <= b.x + planetDiameter &&
+			y >= b.y - planetDiameter && y <= b.y + planetDiameter) {
 			// The mouse honestly hits the rect
 			clickedPlanet = true;
 			selectedPlanetIndex = i;
