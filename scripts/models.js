@@ -15,11 +15,11 @@ class Ships {
     }
 
     add(shipType, number) {
-        this.shipCounts[shipType] += number;
+        this.shipCounts[shipType.name] += number;
     }
 
     remove(shipType, number) {
-        this.shipCounts[shipType] += number;
+        this.shipCounts[shipType.name] += number;
     }
 
     toString() {
@@ -27,6 +27,7 @@ class Ships {
         this.shipTypes.forEach((s) => {
             fleetString += s.abbreviation + ":" + this.shipCounts[s.name] + ",";
         })
+        return fleetString;
     }
 }
 

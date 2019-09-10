@@ -35,9 +35,7 @@ function init() {
 	currentPlayer = 'Red';
 
 	//create an array of random planets
-	for (i = 0; i < maxNumberPlanets; i++) {
-		planets = createRandomPlanets();
-	}
+	planets = createRandomPlanets();
 
 	//set up the mouse listener for selecting planets
 	canvas.onmousedown = mouseListener;
