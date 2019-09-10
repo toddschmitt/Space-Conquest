@@ -266,6 +266,13 @@ function getCurrentPlayerFleetOnCurrentPlanet() {
 		return fleet;
 }
 
+function flashMessage(selectorId, message) {
+	document.getElementById(selectorId).innerHTML = message;
+	setTimeout(function () {
+		document.getElementById(selectorId).innerHTML = "";
+	}, 2000)
+}
+
 function onBuildShipModalOpen() {
 	var currentPlayerIndex = players.findIndex((p) => p.id === currentPlayer);
 
@@ -292,6 +299,12 @@ function onBuildShipModalOpen() {
 	slider.oninput = function () {
 		var output = document.getElementById("shipBuildCount");
 		output.innerHTML = this.value;
+
+		var selectedShipType = shipTypes.filter((s) => s.name === select.options[select.selectedIndex].text)[0];
+		var totalCost = this.value * selectedShipType.cost;
+
+		var shipBuildCost = document.getElementById("shipBuildCost");
+		shipBuildCost.innerHTML = totalCost;
 	}
 
 	var planetNameHeader = document.getElementById("buildShipPlanet");
@@ -325,6 +338,8 @@ function onBuildShipModalOpen() {
 				var fleet = new Fleet(currentPlayer, selectedPlanetIndex, 0, ships);
 				fleets.push(fleet);
 			}
+			document.getElementsByName("credits")[0].value = players[currentPlayerIndex].credits;
+			flashMessage("builtMessage", "Built!");
 		}
 	}
 }
