@@ -228,7 +228,7 @@ function advanceOneTurn() {
 	if (currentTurn != 0) {
 		currentPlayer = currentPlayer == player1Id ? player2Id : player1Id;
 	} else {
-		document.getElementsByName("startGameEndTurn")[0].value = 'End Turn';
+		document.getElementsByName("startGameEndTurn")[0].innerHTML = 'End Turn';
 	}
 
 	var currentPlayerIndex = players.findIndex((p) => p.id === currentPlayer);
@@ -277,6 +277,19 @@ function onBuildShipModalOpen() {
 	var currentPlayerIndex = players.findIndex((p) => p.id === currentPlayer);
 
 	var select = document.getElementById("buildShipSelect");
+
+	// select.empty()
+	// // 	.append('<option value="" disabled selected style="display:none;">-</option>');
+	// var i;
+	// //select.appendChild(opt);
+	if (select.options.length > 1) {
+		for (i = select.options.length - 1; i >= 1; i--) {
+			//select.appendChild(opt);
+			select.remove(i);
+		}
+	}
+
+
 	select.onchange = function (e) {
 		var shipCost = document.getElementById("shipCost");
 		shipCost.innerHTML = shipTypes.filter((s) => s.name === e.srcElement.value)[0].cost;
@@ -284,6 +297,11 @@ function onBuildShipModalOpen() {
 
 	//For every unique ship type, we are going to enter them into the dropdown selection so that
 	// you can choose to make that type of ship.
+	// var opt = document.createElement('option');
+	// opt.appendChild(document.createTextNode(s.name));
+	// opt.value = s.name;
+	// select.appendChild(opt);
+
 	shipTypes.forEach((s) => {
 		var opt = document.createElement('option');
 		opt.appendChild(document.createTextNode(s.name));
@@ -322,7 +340,7 @@ function onBuildShipModalOpen() {
 		var selectedShipType = shipTypes.filter((s) => s.name === select.options[select.selectedIndex].text)[0];
 		var totalCost = slider.value * selectedShipType.cost;
 
-		if (totalCost < players[currentPlayerIndex].credits) {
+		if (totalCost <= players[currentPlayerIndex].credits) {
 			//Pay for the ships we built
 			players[currentPlayerIndex].credits -= totalCost;
 			var creditsBuildShips = document.getElementById("creditsBuildShips");
