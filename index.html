@@ -106,7 +106,46 @@
 		<div class="overlay"></div>
 		<div class="modal_content">
 			<!-- Dynamic Section -->
-			<h2>Send Ships</h2>
+			<div style="display: flex; flex-direction: row;">
+				<h2>Send Ships from</h2><span></span>
+				<h2 id="sendShipFromPlanet"></h2>
+			</div>
+
+			<div style="display: flex; flex-direction: row;">
+				<div class="divided-modal-left">
+					<!--  Left Side -->
+					To: <select id="sendShipSelectPlanet">
+						<option value="" disabled selected style="display:none;">-</option>
+					</select>
+					<div>Turns of Transit:<span id="shipSendTransitTurns"></span> Arrival Turn: <span
+							id="shipSendArrivalTurn"></span></div>
+
+					<div>Ships Available: <span id="shipSendShipsAvailable"></span></div>
+
+					Ship Type: <select id="sendShipSelectShip">
+						<option value="" disabled selected style="display:none;">-</option>
+					</select>
+					<div class="slidecontainer">
+						<input type="range" min="1" max="100" value="1" class="slider" id="sendShipRange">
+						<p># to Send: <span id="shipSendCount"></span></p>
+					</div>
+
+					<button title="Add to Fleet" class="button button-md" id="sendShipButton">
+						<span>Add to Fleet</span>
+					</button>
+				</div>
+				<div>
+					<!--  Right Side -->
+					<button title="Send" class="button button-md" id="sendShipButton">
+						<span>Send</span>
+					</button>
+				</div>
+
+
+			</div>
+
+
+
 
 			<!-- End of Dynamic Section -->
 			<div class="modal_buttons">

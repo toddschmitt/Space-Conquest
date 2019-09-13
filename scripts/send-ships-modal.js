@@ -38,7 +38,7 @@ function onSendShipModalOpen() {
         shipBuildCost.innerHTML = totalCost;
     }
 
-    var planetNameHeader = document.getElementById("buildShipPlanet");
+    var planetNameHeader = document.getElementById("sendShipFromPlanet");
     planetNameHeader.textContent = planets[selectedPlanetIndex].name;
 
     var creditsBuildShips = document.getElementById("creditsBuildShips");
