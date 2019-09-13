@@ -2,7 +2,7 @@ function drawMap() {
 	//clear the map by drawing the background color over the whole thing
 	ctx.beginPath();
 	ctx.rect(0, 0, maxX, maxY);
-	ctx.fillStyle = "#eee";
+	ctx.fillStyle = "lightblue";
 	ctx.fill();
 	ctx.closePath();
 

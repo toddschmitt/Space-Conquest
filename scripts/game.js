@@ -23,8 +23,8 @@ var shipTypes = [new ShotGunBoatShip(), new FighterShip()];
 var modals = MODAL_MODULE;
 
 function init() {
-	modals.register_modal('buildShip', '.modal_buildShips', onBuildShipModalOpen);
-	modals.register_modal('sendShips', '.modal_sendShips');
+	modals.register_modal('buildShip', '.modal_buildShips', onBuildShipModalOpen, onBuildShipModalClose);
+	modals.register_modal('sendShips', '.modal_sendShips', onSendShipModalOpen, onSendShipModalClose);
 	modals.init_modal();
 
 	//Make the canvas and get the context
@@ -118,9 +118,9 @@ function refreshSelectedPlanetInfo(planet) {
 		document.getElementsByName("techLevel")[0].value = planet.techLevel;
 		document.getElementsByName("ownerName")[0].value = planet.owner;
 		document.getElementsByName("incomePerTurn")[0].value = planet.income;
-		document.getElementsByName("shipsRed")[0].value =
+		document.getElementById("shipsRed").value =
 			fleetToString(fleets.filter((f) => f.owner === 'Red' && f.location === planet.id && f.remainingTransit < 1)[0]);
-		document.getElementsByName("shipsBlue")[0].value =
+		document.getElementById("shipsBlue").value =
 			fleetToString(fleets.filter((f) => f.owner === 'Blue' && f.location === planet.id && f.remainingTransit < 1)[0]);
 		document.getElementsByName("shipsNative")[0].value =
 			fleetToString(fleets.filter((f) => f.owner === 'Native' && f.location === planet.id && f.remainingTransit < 1)[0]);
@@ -135,8 +135,8 @@ function refreshSelectedPlanetInfo(planet) {
 		document.getElementsByName("techLevel")[0].value = "unknown";
 		document.getElementsByName("ownerName")[0].value = "unknown";
 		document.getElementsByName("incomePerTurn")[0].value = "unknown";
-		document.getElementsByName("shipsRed")[0].value = "unknown";
-		document.getElementsByName("shipsBlue")[0].value = "unknown";
+		document.getElementById("shipsRed").value = "unknown";
+		document.getElementsById("shipsBlue").value = "unknown";
 		document.getElementsByName("shipsNative")[0].value = "unknown";
 
 		document.getElementsByName("buildShip")[0].disabled = true;
@@ -264,100 +264,4 @@ function getCurrentPlayerFleetOnCurrentPlanet() {
 		return fleet[0];
 	else
 		return fleet;
-}
-
-function flashMessage(selectorId, message) {
-	document.getElementById(selectorId).innerHTML = message;
-	setTimeout(function () {
-		document.getElementById(selectorId).innerHTML = "";
-	}, 2000)
-}
-
-function onBuildShipModalOpen() {
-	var currentPlayerIndex = players.findIndex((p) => p.id === currentPlayer);
-
-	var select = document.getElementById("buildShipSelect");
-
-	// select.empty()
-	// // 	.append('<option value="" disabled selected style="display:none;">-</option>');
-	// var i;
-	// //select.appendChild(opt);
-	if (select.options.length > 1) {
-		for (i = select.options.length - 1; i >= 1; i--) {
-			//select.appendChild(opt);
-			select.remove(i);
-		}
-	}
-
-
-	select.onchange = function (e) {
-		var shipCost = document.getElementById("shipCost");
-		shipCost.innerHTML = shipTypes.filter((s) => s.name === e.srcElement.value)[0].cost;
-	}
-
-	//For every unique ship type, we are going to enter them into the dropdown selection so that
-	// you can choose to make that type of ship.
-	// var opt = document.createElement('option');
-	// opt.appendChild(document.createTextNode(s.name));
-	// opt.value = s.name;
-	// select.appendChild(opt);
-
-	shipTypes.forEach((s) => {
-		var opt = document.createElement('option');
-		opt.appendChild(document.createTextNode(s.name));
-		opt.value = s.name;
-		select.appendChild(opt);
-	})
-	select.selectedIndex = 0;
-
-	var slider = document.getElementById("myRange");
-	var output = document.getElementById("shipBuildCount");
-	output.innerHTML = slider.value;
-
-	slider.oninput = function () {
-		var output = document.getElementById("shipBuildCount");
-		output.innerHTML = this.value;
-
-		var selectedShipType = shipTypes.filter((s) => s.name === select.options[select.selectedIndex].text)[0];
-		var totalCost = this.value * selectedShipType.cost;
-
-		var shipBuildCost = document.getElementById("shipBuildCost");
-		shipBuildCost.innerHTML = totalCost;
-	}
-
-	var planetNameHeader = document.getElementById("buildShipPlanet");
-	planetNameHeader.textContent = planets[selectedPlanetIndex].name;
-
-	var creditsBuildShips = document.getElementById("creditsBuildShips");
-	creditsBuildShips.value = players[currentPlayerIndex].credits;
-
-	var buildShipButton = document.getElementById("buildShipButton");
-	buildShipButton.onclick = function () {
-		var slider = document.getElementById("myRange");
-
-		var currentPlayerIndex = players.findIndex((p) => p.id === currentPlayer);
-
-		var selectedShipType = shipTypes.filter((s) => s.name === select.options[select.selectedIndex].text)[0];
-		var totalCost = slider.value * selectedShipType.cost;
-
-		if (totalCost <= players[currentPlayerIndex].credits) {
-			//Pay for the ships we built
-			players[currentPlayerIndex].credits -= totalCost;
-			var creditsBuildShips = document.getElementById("creditsBuildShips");
-			creditsBuildShips.value = players[currentPlayerIndex].credits;
-
-			//See if we have a fleet on this planet right now, if so add to that fleet
-			var myFleetHere = getCurrentPlayerFleetOnCurrentPlanet();
-			if (myFleetHere) {
-				myFleetHere.ships.add(selectedShipType, parseInt(slider.value));
-			} else { //if not, make a new fleet at this planet
-				var ships = new Ships();
-				ships.add(selectedShipType, parseInt(slider.value));
-				var fleet = new Fleet(currentPlayer, selectedPlanetIndex, 0, ships);
-				fleets.push(fleet);
-			}
-			document.getElementsByName("credits")[0].value = players[currentPlayerIndex].credits;
-			flashMessage("builtMessage", "Built!");
-		}
-	}
 }
