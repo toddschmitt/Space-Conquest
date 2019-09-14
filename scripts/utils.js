@@ -25,3 +25,7 @@ function flashMessage(selectorId, message) {
 		document.getElementById(selectorId).innerHTML = "";
 	}, 2000)
 }
+
+var byId = function (id) {
+	return document.getElementById(id);
+};

@@ -136,7 +136,7 @@ function refreshSelectedPlanetInfo(planet) {
 		document.getElementsByName("ownerName")[0].value = "unknown";
 		document.getElementsByName("incomePerTurn")[0].value = "unknown";
 		document.getElementById("shipsRed").value = "unknown";
-		document.getElementsById("shipsBlue").value = "unknown";
+		document.getElementById("shipsBlue").value = "unknown";
 		document.getElementsByName("shipsNative")[0].value = "unknown";
 
 		document.getElementsByName("buildShip")[0].disabled = true;

@@ -97,3 +97,7 @@ h2 {
 .divided-modal-left {
     width: 50%;
 }
+
+.big-split-modal-pane {
+    height: 50%;
+}
