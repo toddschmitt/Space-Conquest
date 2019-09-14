@@ -19,7 +19,7 @@ class Ships {
     }
 
     remove(shipType, number) {
-        this.shipCounts[shipType.name] += number;
+        this.shipCounts[shipType.name] -= number;
     }
 
     toString() {

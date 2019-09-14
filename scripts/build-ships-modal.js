@@ -15,6 +15,9 @@ function onBuildShipModalOpen() {
     setupBuildSelectors();
     var currentPlayerIndex = players.findIndex((p) => p.id === currentPlayer);
 
+    //Fill in the planet name we're building on
+    buildSelectors.buildShipPlanet.textContent = planets[selectedPlanetIndex].name;
+
     if (buildSelectors.buildShipSelect.options.length > 1) {
         for (i = buildSelectors.buildShipSelect.options.length - 1; i >= 1; i--) {
             buildSelectors.buildShipSelect.remove(i);
@@ -47,9 +50,6 @@ function onBuildShipModalOpen() {
 
         buildSelectors.shipBuildCost.innerHTML = totalCost;
     }
-
-    buildSelectors.buildShipPlanet.textContent = planets[selectedPlanetIndex].name;
-
 
     buildSelectors.creditsBuildShips.value = players[currentPlayerIndex].credits;
 

@@ -14,17 +14,40 @@ function setupSendSelectors() {
     sendSelectors.sendShipButton = byId("sendShipButton");
 }
 
+var send_numberOfShipsRange;
+var send_fleetGettingReady;
+var send_selectedShipTypeName;
+
 function onSendShipModalOpen() {
     setupSendSelectors();
+    //var currentPlayerIndex = players.findIndex((p) => p.id === currentPlayer);
 
+    numberOfShipsRange = 0;
+
+
+    var ships = new Ships(shipTypes);
+    send_fleetGettingReady = new Fleet(currentPlayer, selectedPlanetIndex, 0, ships);
+
+    //Fill in the planet name we're building on
+    sendSelectors.sendShipFromPlanet.textContent = planets[selectedPlanetIndex].name;
+
+    //Clean up the planet dropdown selector, remove all but the default
     if (sendSelectors.sendShipSelectPlanet.options.length > 1) {
         for (i = sendSelectors.sendShipSelectPlanet.options.length - 1; i >= 1; i--) {
             sendSelectors.sendShipSelectPlanet.remove(i);
         }
     }
 
-    var currentPlayerIndex = players.findIndex((p) => p.id === currentPlayer);
+    //Fill in the list of planets you can travel to, based on the available space lanes
+    spaceLanes.filter((l) => l.planetFrom.id === selectedPlanetIndex).map((l) => l.planetTo.name).forEach((s) => {
+        var opt = document.createElement('option');
+        opt.appendChild(document.createTextNode(s));
+        opt.value = s;
+        sendSelectors.sendShipSelectPlanet.appendChild(opt);
+    })
+    sendSelectors.sendShipSelectPlanet.selectedIndex = 0;
 
+    //If the planet dropdown selector changes, fill in how long it will take the ships to arrive
     sendSelectors.sendShipSelectPlanet.onchange = function (e) {
         var destinationIndex = planets.findIndex((p) => p.name === e.srcElement.value);
         var spaceLane = spaceLanes.filter((l) => l.planetFrom.id === selectedPlanetIndex && l.planetTo.id === destinationIndex)[0];
@@ -33,68 +56,54 @@ function onSendShipModalOpen() {
 
         sendSelectors.shipSendArrivalTurn.innerHTML = spaceLane.transitTime + currentTurn;
     }
-    sendSelectors.sendShipSelectPlanet.selectedIndex = 0;
 
-    spaceLanes.filter((l) => l.planetFrom.id === selectedPlanetIndex).map((l) => l.planetTo.name).forEach((s) => {
-        var opt = document.createElement('option');
-        opt.appendChild(document.createTextNode(s));
-        opt.value = s;
-        sendSelectors.sendShipSelectPlanet.appendChild(opt);
-    })
 
+    //Fill in the ship types and quantity based on what ships are on the selected planet
     sendSelectors.shipSendShipsAvailable.innerHTML = getCurrentPlayerFleetOnCurrentPlanet().ships.toString();
 
+    //Clean up the ship type to send, remove all but the default option
+    if (sendSelectors.sendShipSelectShipType.options.length > 1) {
+        for (i = sendSelectors.sendShipSelectShipType.options.length - 1; i >= 1; i--) {
+            sendSelectors.sendShipSelectShipType.remove(i);
+        }
+    }
 
-    // var slider = document.getElementById("myRange");
-    // var output = document.getElementById("shipBuildCount");
-    // output.innerHTML = slider.value;
+    //Fill in the list of ship types you can select, based on what ship types are on this planet
+    var shipCount = getCurrentPlayerFleetOnCurrentPlanet().ships.shipCounts;
 
-    // slider.oninput = function () {
-    //     var output = document.getElementById("shipBuildCount");
-    //     output.innerHTML = this.value;
+    shipTypes.forEach((s) => {
+        if (shipCount[s.name] > 0) {
+            var opt = document.createElement('option');
+            opt.appendChild(document.createTextNode(s.name));
+            opt.value = s.name;
+            sendSelectors.sendShipSelectShipType.appendChild(opt);
+        }
+    })
+    sendSelectors.sendShipSelectShipType.selectedIndex = 0;
 
-    //     var selectedShipType = shipTypes.filter((s) => s.name === select.options[select.selectedIndex].text)[0];
-    //     var totalCost = this.value * selectedShipType.cost;
+    //When the ship type changes, set the range slider to max out at the total number of those ships
+    sendSelectors.sendShipSelectShipType.onchange = function (st) {
+        var shipCount = getCurrentPlayerFleetOnCurrentPlanet().ships.shipCounts;
+        sendSelectors.sendShipRange.max = shipCount[st.srcElement.value];
+        send_selectedShipTypeName = st.srcElement.value;
+    }
 
-    //     var shipBuildCost = document.getElementById("shipBuildCost");
-    //     shipBuildCost.innerHTML = totalCost;
-    // }
 
-    // var planetNameHeader = document.getElementById("sendShipFromPlanet");
-    // planetNameHeader.textContent = planets[selectedPlanetIndex].name;
+    sendSelectors.sendShipRange.oninput = function (r) {
+        sendSelectors.shipSendCount.innerHTML = this.value;
+        send_numberOfShipsRange = this.value;
+    }
 
-    // var creditsBuildShips = document.getElementById("creditsBuildShips");
-    // creditsBuildShips.value = players[currentPlayerIndex].credits;
-
-    // var buildShipButton = document.getElementById("buildShipButton");
-    // buildShipButton.onclick = function () {
-    //     var slider = document.getElementById("myRange");
-
-    //     var currentPlayerIndex = players.findIndex((p) => p.id === currentPlayer);
-
-    //     var selectedShipType = shipTypes.filter((s) => s.name === select.options[select.selectedIndex].text)[0];
-    //     var totalCost = slider.value * selectedShipType.cost;
-
-    //     if (totalCost <= players[currentPlayerIndex].credits) {
-    //         //Pay for the ships we built
-    //         players[currentPlayerIndex].credits -= totalCost;
-    //         var creditsBuildShips = document.getElementById("creditsBuildShips");
-    //         creditsBuildShips.value = players[currentPlayerIndex].credits;
-
-    //         //See if we have a fleet on this planet right now, if so add to that fleet
-    //         var myFleetHere = getCurrentPlayerFleetOnCurrentPlanet();
-    //         if (myFleetHere) {
-    //             myFleetHere.ships.add(selectedShipType, parseInt(slider.value));
-    //         } else { //if not, make a new fleet at this planet
-    //             var ships = new Ships();
-    //             ships.add(selectedShipType, parseInt(slider.value));
-    //             var fleet = new Fleet(currentPlayer, selectedPlanetIndex, 0, ships);
-    //             fleets.push(fleet);
-    //         }
-    //         document.getElementsByName("credits")[0].value = players[currentPlayerIndex].credits;
-    //         flashMessage("builtMessage", "Built!");
-    //     }
-    // }
+    sendSelectors.addToFleetButton.onclick = function () {
+        if (send_numberOfShipsRange > 0) {
+            send_fleetGettingReady.ships.add(shipTypes.find((s) => s.name === send_selectedShipTypeName), parseInt(sendSelectors.sendShipRange.value));
+            getCurrentPlayerFleetOnCurrentPlanet().ships.remove(shipTypes.find((s) => s.name === send_selectedShipTypeName), parseInt(sendSelectors.sendShipRange.value));
+            sendSelectors.shipSendShipsInFleet.innerHTML = send_fleetGettingReady.ships.toString();
+            sendSelectors.shipSendShipsAvailable.innerHTML = getCurrentPlayerFleetOnCurrentPlanet().ships.toString();
+        } else {
+            flashMessage("sendMessage", "No Ships Selected");
+        }
+    }
 }
 
 function onSendShipModalClose() {
