@@ -22,6 +22,14 @@ class Ships {
         this.shipCounts[shipType.name] -= number;
     }
 
+    isEmpty() {
+        var numberOfShips;
+        this.shipTypes.forEach((s) => {
+            numberOfShips += this.shipCounts[s.name];
+        })
+        return numberOfShips < 1;
+    }
+
     toString() {
         var fleetString = "";
         this.shipTypes.forEach((s) => {

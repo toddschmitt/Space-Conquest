@@ -29,14 +29,6 @@ var MODAL_MODULE = (function () {
         current_open_modal_instance.onOpen();
     }
 
-    function hideAllModals() {
-        current_open_modal_selector.style.display = 'none';
-        detachModalListeners(current_open_modal_selector);
-        current_open_modal_selector = null;
-        current_open_modal_instance.onClose();
-        current_open_modal_instance = null;
-    }
-
 
 
     //Public Section
@@ -57,7 +49,16 @@ var MODAL_MODULE = (function () {
         });
     }
 
+    function hideAllModals() {
+        current_open_modal_selector.style.display = 'none';
+        detachModalListeners(current_open_modal_selector);
+        current_open_modal_selector = null;
+        current_open_modal_instance.onClose();
+        current_open_modal_instance = null;
+    }
+
     modal_module.init_modal = init_modal;
     modal_module.register_modal = register_modal;
+    modal_module.hideAllModals = hideAllModals;
     return modal_module;
 }());

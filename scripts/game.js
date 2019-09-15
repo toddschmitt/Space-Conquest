@@ -225,6 +225,19 @@ function createRandomHomePlanet(playerId) {
 function processBattle(fleet1, fleet2) {}
 
 function advanceOneTurn() {
+	//Move in transit fleets closer to their destination
+	for (var i = 0; i < fleets.length; i++) {
+		if (fleets[i].owner === currentPlayer && fleets[i].remainingTransit > 0) {
+			fleets[i].remainingTransit--;
+		}
+	}
+
+	//Resolve battles
+
+	//Process Native production and rebellion
+
+	//Check for victory or loss
+
 	if (currentTurn != 0) {
 		currentPlayer = currentPlayer == player1Id ? player2Id : player1Id;
 	} else {
@@ -239,15 +252,6 @@ function advanceOneTurn() {
 	var creditsEarned = planets.filter((p) => p.owner === currentPlayer).map((p) => p.income).reduce((total, planet) => total + planet.income);
 
 	players[currentPlayerIndex].credits += creditsEarned;
-
-	//Resolve battles
-
-	//Move in transit fleets closer to their destination
-
-	//Process Native production and rebellion
-
-	//Check for victory or loss
-
 
 	//Update the display
 	document.getElementsByName("credits")[0].value = players[currentPlayerIndex].credits;

@@ -17,12 +17,17 @@ function setupSendSelectors() {
 var send_numberOfShipsRange;
 var send_fleetGettingReady;
 var send_selectedShipTypeName;
+var send_restorePointForFleet;
+var send_selectedSpacelane;
 
 function onSendShipModalOpen() {
     setupSendSelectors();
     //var currentPlayerIndex = players.findIndex((p) => p.id === currentPlayer);
 
     numberOfShipsRange = 0;
+
+    //If the user cancels the modal, the fleet at this planet will restore and no ships will be moved.
+    send_restorePointForFleet = getCurrentPlayerFleetOnCurrentPlanet();
 
 
     var ships = new Ships(shipTypes);
@@ -50,11 +55,11 @@ function onSendShipModalOpen() {
     //If the planet dropdown selector changes, fill in how long it will take the ships to arrive
     sendSelectors.sendShipSelectPlanet.onchange = function (e) {
         var destinationIndex = planets.findIndex((p) => p.name === e.srcElement.value);
-        var spaceLane = spaceLanes.filter((l) => l.planetFrom.id === selectedPlanetIndex && l.planetTo.id === destinationIndex)[0];
+        send_selectedSpacelane = spaceLanes.filter((l) => l.planetFrom.id === selectedPlanetIndex && l.planetTo.id === destinationIndex)[0];
 
-        sendSelectors.shipSendTransitTurns.innerHTML = spaceLane.transitTime;
+        sendSelectors.shipSendTransitTurns.innerHTML = send_selectedSpacelane.transitTime;
 
-        sendSelectors.shipSendArrivalTurn.innerHTML = spaceLane.transitTime + currentTurn;
+        sendSelectors.shipSendArrivalTurn.innerHTML = send_selectedSpacelane.transitTime + currentTurn;
     }
 
 
@@ -104,8 +109,29 @@ function onSendShipModalOpen() {
             flashMessage("sendMessage", "No Ships Selected");
         }
     }
+
+    sendSelectors.sendShipButton.onclick = function () {
+
+        send_fleetGettingReady.location = send_selectedSpacelane.planetTo.id;
+        send_fleetGettingReady.remainingTransit = send_selectedSpacelane.transitTime;
+        fleets.push(send_fleetGettingReady);
+
+        //If the fleet at the planet is empty now, delete it
+        if (getCurrentPlayerFleetOnCurrentPlanet().ships.isEmpty()) {
+            fleets.splice(fleets.findIndex((f) => f.location === selectedPlanetIndex && f.owner === currentPlayer && f.remainingTransit === 0), 1);
+        } else {
+            send_restorePointForFleet = getCurrentPlayerFleetOnCurrentPlanet();
+        }
+        MODAL_MODULE.hideAllModals();
+    }
 }
 
 function onSendShipModalClose() {
+    if (getCurrentPlayerFleetOnCurrentPlanet()) {
+        //restore the fleet that was on this planet before we started altering it, in case someone hit x without send
+        fleets.splice(fleets.findIndex((f) => f.location === selectedPlanetIndex && f.owner === currentPlayer && f.remainingTransit === 0), 1);
+        fleets.push(send_restorePointForFleet);
+    }
+
     refreshSelectedPlanetInfo(planets[selectedPlanetIndex]);
 }
