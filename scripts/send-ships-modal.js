@@ -105,6 +105,8 @@ function onSendShipModalOpen() {
             getCurrentPlayerFleetOnCurrentPlanet().ships.remove(shipTypes.find((s) => s.name === send_selectedShipTypeName), parseInt(sendSelectors.sendShipRange.value));
             sendSelectors.shipSendShipsInFleet.innerHTML = send_fleetGettingReady.ships.toString();
             sendSelectors.shipSendShipsAvailable.innerHTML = getCurrentPlayerFleetOnCurrentPlanet().ships.toString();
+            sendSelectors.sendShipRange.value = 0;
+            sendSelectors.sendShipRange.max = getCurrentPlayerFleetOnCurrentPlanet().ships.shipCounts[sendSelectors.sendShipSelectShipType.value];
         } else {
             flashMessage("sendMessage", "No Ships Selected");
         }

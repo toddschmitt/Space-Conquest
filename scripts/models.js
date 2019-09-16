@@ -23,7 +23,7 @@ class Ships {
     }
 
     isEmpty() {
-        var numberOfShips;
+        var numberOfShips = 0;
         this.shipTypes.forEach((s) => {
             numberOfShips += this.shipCounts[s.name];
         })
