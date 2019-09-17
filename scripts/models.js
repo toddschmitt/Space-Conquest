@@ -45,16 +45,45 @@ function Player(id) {
 
 }
 
-// function ShipType(name, attack, hp, phase, durability, cost, techLevel, specialAttack) {
-//     this.name = name;
-//     this.attack = attack;
-//     this.hp = hp;
-//     this.phase = phase;
-//     this.durability = durability;
-//     this.cost = cost;
-//     this.techLevel = techLevel;
-//     this.specialAttack = specialAttack;
-// }
+class Battle {
+    constructor(turnNumber, startFleets, location) {
+        this.turnNumber = turnNumber;
+        this.startFleets = startFleets;
+        this.location = location;
+        this.resultFleets = null;
+        this.resultsByPhase = [];
+    }
+
+    addPhaseResults(phaseResult) {
+        this.resultsByPhase.push(phaseResult);
+    }
+    resolve() {
+        this.shipCounts[shipType.name] += number;
+        //returns list of resulting fleets
+        //returns object of battle losses
+    }
+
+    toString() {}
+}
+
+class PhaseResult {
+    constructor(phaseNumber) {
+        this.phaseNumber = phaseNumber;
+        this.results = [];
+    }
+
+    addResult(player, shipsLost) {
+        this.results.push({
+            player: player,
+            shipsLost: shipsLost
+        })
+    }
+
+    toString() {
+
+    }
+}
+
 
 function SpaceLane(planetFrom, planetTo, transitTime) {
     this.planetFrom = planetFrom;
