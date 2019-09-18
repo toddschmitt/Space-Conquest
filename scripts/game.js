@@ -21,6 +21,7 @@ var players = [];
 var longestPossiblePath = distance(0, 0, maxX, maxY);
 var shipTypes = [new ShotGunBoatShip(), new FighterShip()];
 var modals = MODAL_MODULE;
+var battles = [];
 
 function init() {
 	modals.register_modal('buildShip', '.modal_buildShips', onBuildShipModalOpen, onBuildShipModalClose);
@@ -160,7 +161,7 @@ function createRandomPlanets(name) {
 		planet.x = (getRndInteger(mapBorder, maxX - mapBorder));
 		planet.y = (getRndInteger(mapBorder, maxY - mapBorder));
 		planet.techLevel = planetTechLevelDisto[i];
-		planet.income = 100 * planet.techLevel;
+		planet.income = 50 * planet.techLevel;
 		planet.owner = 'Native';
 		if (planet.techLevel > 4) {
 			var ships = new Ships(shipTypes);
@@ -209,7 +210,7 @@ function createRandomHomePlanet(playerId) {
 
 	planets[index].owner = playerId;
 	planets[index].techLevel = 7;
-	planets[index].income = 100 * planets[index].techLevel;
+	planets[index].income = 50 * planets[index].techLevel;
 	var ships = new Ships(shipTypes);
 	ships.add(new FighterShip(), 10);
 	var fleet = new Fleet(playerId, index, 0, ships);
@@ -232,7 +233,44 @@ function advanceOneTurn() {
 		}
 	}
 
+	//Consolidate fleets owned by same player at same planet
+	fleets.sort(function (a, b) {
+		if (a.remainingTransit != b.remainingTransit) {
+			return a.remainingTransit - b.remainingTransit;
+		}
+		if (a.owner != b.owner) {
+			return a < b ? -1 : 1;
+		}
+		return a.location - b.location;
+	});
+
+	if (fleets) {
+		var owner = fleets[0].owner;
+		var location = fleets[0].location;
+		var toDelete = [];
+		for (var i = 1; i < fleets.length; i++) {
+			if (owner === fleets[i].owner && location === fleets[i].location) {
+				toDelete.push(i - 1);
+				Object.keys(fleets[i - 1].ships.shipCounts).forEach((k) => fleets[i].ships.addByName(k, fleets[i - 1].ships.shipCounts[k]));
+			} else {
+				owner = fleets[i].owner;
+				location = fleets[i].location;
+			}
+		}
+		toDelete.reverse();
+		toDelete.forEach((d) => fleets.splice(d, 1));
+	}
+
+
 	//Resolve battles
+	planets.forEach(function (p) {
+		var planetFleets = fleets.filter((f) => f.location === p.id && f.remainingTransit < 1);
+		if (planetFleets.length > 1) {
+			resolveBattle(planetFleets);
+		}
+	});
+
+	//Make new planet owners 
 
 	//Process Native production and rebellion
 

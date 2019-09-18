@@ -18,6 +18,10 @@ class Ships {
         this.shipCounts[shipType.name] += number;
     }
 
+    addByName(name, number) {
+        this.shipCounts[name] += number;
+    }
+
     remove(shipType, number) {
         this.shipCounts[shipType.name] -= number;
     }
@@ -92,13 +96,13 @@ function SpaceLane(planetFrom, planetTo, transitTime) {
 }
 
 class Ship {
-    constructor(count, name, abbreviation, attack, hp, phase, durability, cost, techLevel, specialAttack) {
+    constructor(count, name, abbreviation, attack, hp, phases, durability, cost, techLevel, specialAttack) {
         this.count = count;
         this.name = name;
         this.abbreviation = abbreviation;
         this.attack = attack;
         this.hp = hp;
-        this.phase = phase;
+        this.phases = phases;
         this.durability = durability;
         this.cost = cost;
         this.techLevel = techLevel;
@@ -108,12 +112,12 @@ class Ship {
 
 class FighterShip extends Ship {
     constructor(count) {
-        super(count, "Fighter", "F", 7, 5, 3, 5, 25, 7, 0);
+        super(count, "Fighter", "F", 7, 5, [3], 5, 25, 7, 0);
     }
 }
 
 class ShotGunBoatShip extends Ship {
     constructor(count) {
-        super(count, "ShotgunBoat", "Sb", 10, 3, 2, 5, 50, 7, 0);
+        super(count, "ShotgunBoat", "Sb", 10, 3, [2], 5, 50, 7, 0);
     }
 }
