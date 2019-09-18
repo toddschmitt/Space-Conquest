@@ -261,7 +261,6 @@ function advanceOneTurn() {
 		toDelete.forEach((d) => fleets.splice(d, 1));
 	}
 
-
 	//Resolve battles
 	planets.forEach(function (p) {
 		var planetFleets = fleets.filter((f) => f.location === p.id && f.remainingTransit < 1);

@@ -55,11 +55,11 @@ class Battle {
         this.startFleets = startFleets;
         this.location = location;
         this.resultFleets = null;
-        this.resultsByPhase = [];
+        this.resultsByRound = [];
     }
 
-    addPhaseResults(phaseResult) {
-        this.resultsByPhase.push(phaseResult);
+    addPhaseResults(roundResult) {
+        this.resultsByRound.push(roundResult);
     }
     resolve() {
         this.shipCounts[shipType.name] += number;
@@ -68,6 +68,21 @@ class Battle {
     }
 
     toString() {}
+}
+
+class RoundResult {
+    constructor(roundNumber) {
+        this.roundNumber = roundNumber;
+        this.phaseResults = [];
+    }
+
+    addResult(phaseResult) {
+        this.phaseResults.push(phaseResult);
+    }
+
+    toString() {
+
+    }
 }
 
 class PhaseResult {
