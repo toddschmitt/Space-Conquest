@@ -22,6 +22,7 @@ var longestPossiblePath = distance(0, 0, maxX, maxY);
 var shipTypes = [new ShotGunBoatShip(), new FighterShip()];
 var modals = MODAL_MODULE;
 var battles = [];
+var battleWinnerDamageReduction = .666;
 
 function init() {
 	modals.register_modal('buildShip', '.modal_buildShips', onBuildShipModalOpen, onBuildShipModalClose);

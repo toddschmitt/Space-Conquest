@@ -5,6 +5,33 @@ function Fleet(owner, location, remainingTransit, ships) {
     this.ships = ships;
 }
 
+class Ship {
+    constructor(count, name, abbreviation, attack, hp, phases, durability, cost, techLevel, specialAttack) {
+        this.count = count;
+        this.name = name;
+        this.abbreviation = abbreviation;
+        this.attack = attack;
+        this.hp = hp;
+        this.phases = phases;
+        this.durability = durability;
+        this.cost = cost;
+        this.techLevel = techLevel;
+        this.specialAttack = specialAttack;
+    }
+}
+
+class FighterShip extends Ship {
+    constructor(count) {
+        super(count, "Fighter", "F", 7, 5, [3], 5, 25, 7, 0);
+    }
+}
+
+class ShotGunBoatShip extends Ship {
+    constructor(count) {
+        super(count, "ShotgunBoat", "Sb", 10, 3, [2], 5, 50, 7, 0);
+    }
+}
+
 class Ships {
     constructor(shipTypes) {
         this.shipTypes = shipTypes;
@@ -58,7 +85,7 @@ class Battle {
         this.resultsByRound = [];
     }
 
-    addPhaseResults(roundResult) {
+    addRoundResults(roundResult) {
         this.resultsByRound.push(roundResult);
     }
     resolve() {
@@ -67,7 +94,9 @@ class Battle {
         //returns object of battle losses
     }
 
-    toString() {}
+    toString() {
+        return this.resultsByRound.map((r) => r.toString()).join('\r');
+    }
 }
 
 class RoundResult {
@@ -81,7 +110,13 @@ class RoundResult {
     }
 
     toString() {
-
+        var roundString = "";
+        roundString += "Round: " + (i + 1) + '\r';
+        for (var i = 0; i < 3; i++) {
+            roundString += "Phase: " + (i + 1) + '\r';
+            roundString += (this.phaseResults[i].toString());
+        }
+        return roundString;
     }
 }
 
@@ -91,15 +126,22 @@ class PhaseResult {
         this.results = [];
     }
 
-    addResult(player, shipsLost) {
+    addResult(player, shipsLost, power, resultantFleet) {
         this.results.push({
             player: player,
-            shipsLost: shipsLost
+            shipsLost: shipsLost,
+            power: power,
+            resultantFleet: resultantFleet
         })
     }
 
     toString() {
-
+        var phaseString = "";
+        var r = this.results[0];
+        phaseString += (r.player + ": Power: " + r.power + '\r' + "Losses: " + r.shipsLost.toString() + '\r');
+        r = this.results[1];
+        phaseString += (r.player + ": Power: " + r.power + '\r' + "Losses: " + r.shipsLost.toString() + '\r');
+        return phaseString;
     }
 }
 
@@ -108,31 +150,4 @@ function SpaceLane(planetFrom, planetTo, transitTime) {
     this.planetFrom = planetFrom;
     this.planetTo = planetTo;
     this.transitTime = transitTime;
-}
-
-class Ship {
-    constructor(count, name, abbreviation, attack, hp, phases, durability, cost, techLevel, specialAttack) {
-        this.count = count;
-        this.name = name;
-        this.abbreviation = abbreviation;
-        this.attack = attack;
-        this.hp = hp;
-        this.phases = phases;
-        this.durability = durability;
-        this.cost = cost;
-        this.techLevel = techLevel;
-        this.specialAttack = specialAttack;
-    }
-}
-
-class FighterShip extends Ship {
-    constructor(count) {
-        super(count, "Fighter", "F", 7, 5, [3], 5, 25, 7, 0);
-    }
-}
-
-class ShotGunBoatShip extends Ship {
-    constructor(count) {
-        super(count, "ShotgunBoat", "Sb", 10, 3, [2], 5, 50, 7, 0);
-    }
 }
