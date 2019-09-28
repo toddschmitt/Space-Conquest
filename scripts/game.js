@@ -22,7 +22,7 @@ var longestPossiblePath = distance(0, 0, maxX, maxY);
 var shipTypes = [new ShotGunBoatShip(), new FighterShip()];
 var modals = MODAL_MODULE;
 var battles = [];
-var battleWinnerDamageReduction = .666;
+var battleWinnerDamageReduction = .8;
 
 function init() {
 	modals.register_modal('buildShip', '.modal_buildShips', onBuildShipModalOpen, onBuildShipModalClose);
@@ -266,7 +266,8 @@ function advanceOneTurn() {
 	planets.forEach(function (p) {
 		var planetFleets = fleets.filter((f) => f.location === p.id && f.remainingTransit < 1);
 		if (planetFleets.length > 1) {
-			resolveBattle(planetFleets);
+			var battle = resolveBattle(planetFleets);
+			battles.push(battle);
 		}
 	});
 
