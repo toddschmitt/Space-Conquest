@@ -12,11 +12,19 @@ function resolveBattle(fleets) {
     combatant1Fleet = fleets.filter((f) => f.owner === combatant1)[0];
     combatant2Fleet = fleets.filter((f) => f.owner === combatant2)[0];
 
+    var combatant1ShipCount = combatant1Fleet.ships.getCountOfShips();
+    var combatant2ShipCount = combatant2Fleet.ships.getCountOfShips();
+
+    const battleLuckContainer = new BattleLuckContainer(
+        calculateLuckModifiers(combatant1ShipCount < combatant2ShipCount),
+        calculateLuckModifiers(combatant2ShipCount < combatant1ShipCount)
+    )
+
     var battle = new Battle(currentTurn, [combatant1Fleet.clone(), combatant2Fleet.clone()], combatant1Fleet.location);
     for (var roundNum = 0; roundNum < 3; roundNum++) {
         var roundResult = new RoundResult(roundNum + 1);
         for (var phaseNum = 0; phaseNum < 3; phaseNum++) {
-            roundResult.addResult(resolveBattlePhase(combatant1Fleet, combatant2Fleet, phaseNum, roundNum));
+            roundResult.addResult(resolveBattlePhase(combatant1Fleet, combatant2Fleet, phaseNum, roundNum, battleLuckContainer));
         }
         battle.addRoundResults(roundResult);
     }
@@ -24,44 +32,23 @@ function resolveBattle(fleets) {
     return battle;
 }
 
-function calculateLuckModifiers() {
-    var r = getRndInteger(1, 8);
-    switch (r) {
-        case 1:
-            return [1, 1, 1.25, .75];
-        case 2:
-            return [1, 1, 1.15, .85];
-        case 3:
-            return [1, 1, 1.1, .9];
-        case 4:
-            return [1, 1, 1, 1];
-        case 5:
-            return [1, 1, 1, 1];
-        case 6:
-            return [1.1, .90, 1, 1];
-        case 7:
-            return [1.15, .85, 1, 1];
-        case 8:
-            return [1.25, .75, 1, 1];
-    }
+function calculateLuckModifiers(underdog) {
+    var r = getRndInteger(0, 7);
+    if (underdog)
+        r++;
+
+    return new BattleLuckModifiers(.6 + .25 * r, 1 - .09 * r);
 }
 
-function resolveBattlePhase(combatant1Fleet, combatant2Fleet, phaseNum, roundNum) {
+function resolveBattlePhase(combatant1Fleet, combatant2Fleet, phaseNum, roundNum, battleLuckContainer) {
     var phaseResult = new PhaseResult(phaseNum);
 
-    var [c1AttackMod, c1DefenseMod, c2AttackMod, c2DefenseMod] = calculateLuckModifiers();
-
     //For this phase, generate the full attack power for combatant1
-    var combatant1AttackPower = calculatePhaseAttackPower(combatant1Fleet, phaseNum) * c1AttackMod;
-    var combatant2AttackPower = calculatePhaseAttackPower(combatant2Fleet, phaseNum) * c2AttackMod;
-    //var combatant1DamageReduction = combatant1AttackPower > combatant2AttackPower ? battleWinnerDamageReduction : 1;
-    //var combatant2DamageReduction = combatant1AttackPower < combatant2AttackPower ? battleWinnerDamageReduction : 1;
+    var combatant1AttackPower = calculatePhaseAttackPower(combatant1Fleet, phaseNum) * battleLuckContainer.combatant1Modifiers.attackModifier;
+    var combatant2AttackPower = calculatePhaseAttackPower(combatant2Fleet, phaseNum) * battleLuckContainer.combatant2Modifiers.attackModifier;
 
-    var combatant1DamageReduction = c1DefenseMod;
-    var combatant2DamageReduction = c2DefenseMod;
-
-    var combatant1Losses = removeBattleLossesFromFleet(combatant2AttackPower * combatant1DamageReduction, combatant1Fleet);
-    var combatant2Losses = removeBattleLossesFromFleet(combatant1AttackPower * combatant2DamageReduction, combatant2Fleet);
+    var combatant1Losses = removeBattleLossesFromFleet(combatant2AttackPower * battleLuckContainer.combatant1Modifiers.defenseModifier, combatant1Fleet);
+    var combatant2Losses = removeBattleLossesFromFleet(combatant1AttackPower * battleLuckContainer.combatant2Modifiers.defenseModifier, combatant2Fleet);
 
     shipTypes.forEach((st) => {
         //Effects of durability, bring ships back from the dead.
@@ -146,6 +133,7 @@ function test_battle() {
 
     ships = new Ships(shipTypes);
     ships.add(new FighterShip(), 3);
+    ships.add(new ShotGunShip(), 2);
     fleet = new Fleet('Blue', 1, 0, ships);
     battleTestFleets.push(fleet);
 
@@ -165,21 +153,35 @@ function test_removeBattleLossesFromFleet() {
     console.log("Actual:" + removeBattleLossesFromFleet(8, fleet).toString());
 }
 
-function test_montecarlo() {
-    var count = {};
-    for (var i = 0; i < 100000; i++) {
+function test_montecarlo(iterations) {
+    if (iterations === undefined) {
+        iterations = 100000;
+    }
+    var dict = {};
+    for (var i = 0; i < iterations; i++) {
         var battle = test_battle();
         var resultFleet1 = battle.resultFleets.filter((f) => f.owner === player1Id)[0];
         var resultFleet2 = battle.resultFleets.filter((f) => f.owner === player2Id)[0];
         var key = player1Id + resultFleet1.ships.toString() + player2Id + resultFleet2.ships.toString();
-        if (key in count) {
-            count[key] = count[key] + 1;
+        if (key in dict) {
+            dict[key] = dict[key] + 1;
         } else {
-            count[key] = 1;
+            dict[key] = 1;
         }
     }
-    for (var k in count) {
-        var value = count[k];
-        console.log(k + " " + value);
+    // Create items array
+    var items = Object.keys(dict).map(function (key) {
+        return [key, dict[key]];
+    });
+
+    // Sort the array based on the second element
+    items.sort(function (first, second) {
+        return second[1] - first[1];
+    });
+
+    for (var k = 0; k < items.length; k++) {
+        var count = items[k][1];
+        var percentage = items[k][1] / iterations * 100;
+        console.log(items[k][0] + " " + count + " " + percentage.toFixed(2) + "%");
     }
 }

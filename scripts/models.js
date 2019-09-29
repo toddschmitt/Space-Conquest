@@ -29,13 +29,13 @@ class Ship {
 
 class FighterShip extends Ship {
     constructor(count) {
-        super(count, "Fighter", "F", 8, 5, [3], 5, 25, 7, 0);
+        super(count, "Fighter", "F", 10, 5, [3], 5, 25, 7, 0);
     }
 }
 
-class ShotGunBoatShip extends Ship {
+class ShotGunShip extends Ship {
     constructor(count) {
-        super(count, "ShotgunBoat", "Sb", 12, 3, [2], 5, 50, 7, 0);
+        super(count, "ShotGunShip", "Sg", 18, 3, [2], 5, 50, 7, 0);
     }
 }
 
@@ -83,12 +83,30 @@ class Ships {
         })
         return fleetString;
     }
+
+    getCountOfShips() {
+        var count = 0;
+        this.shipTypes.forEach((s) => {
+            count += this.shipCounts[s.name];
+        })
+        return count;
+    }
 }
 
 function Player(id) {
     this.id = id;
     this.credits = 0;
 
+}
+
+function BattleLuckModifiers(attackModifier, defenseModifier) {
+    this.attackModifier = attackModifier;
+    this.defenseModifier = defenseModifier;
+}
+
+function BattleLuckContainer(combatant1Modifiers, combatant2Modifiers) {
+    this.combatant1Modifiers = combatant1Modifiers;
+    this.combatant2Modifiers = combatant2Modifiers;
 }
 
 class Battle {
@@ -98,6 +116,7 @@ class Battle {
         this.location = location;
         this.resultFleets = null;
         this.resultsByRound = [];
+
     }
 
     addRoundResults(roundResult) {
@@ -114,11 +133,11 @@ class Battle {
     }
 
     toString(terse) {
-        return "Start Fleet " + this.startFleets[0].owner + ": " + this.startFleets[0].ships.toString() + '\r' +
-            "Start Fleet " + this.startFleets[1].owner + ": " + this.startFleets[1].ships.toString() + '\r' +
-            this.resultsByRound.map((r) => r.toString(terse)).join('\r') +
-            "End Fleet " + this.resultFleets[0].owner + this.resultFleets[0].ships.toString() + '\r' +
-            "End Fleet " + this.resultFleets[1].owner + this.resultFleets[1].ships.toString() + '\r';
+        return "Start Fleet " + this.startFleets[0].owner + ": " + this.startFleets[0].ships.toString() + '\n' +
+            "Start Fleet " + this.startFleets[1].owner + ": " + this.startFleets[1].ships.toString() + '\n' +
+            this.resultsByRound.map((r) => r.toString(terse)).join('\n') +
+            "End Fleet " + this.resultFleets[0].owner + this.resultFleets[0].ships.toString() + '\n' +
+            "End Fleet " + this.resultFleets[1].owner + this.resultFleets[1].ships.toString() + '\n';
     }
 }
 
@@ -134,9 +153,9 @@ class RoundResult {
 
     toString(terse) {
         var roundString = "";
-        roundString += "Round: " + this.roundNumber + '\r';
+        roundString += "Round: " + this.roundNumber + '\n';
         for (var i = 0; i < this.phaseResults.length; i++) {
-            roundString += "Phase: " + (i + 1) + '\r';
+            roundString += "Phase: " + (i + 1) + '\n';
             roundString += (this.phaseResults[i].toString(terse));
         }
         return roundString;
@@ -163,9 +182,9 @@ class PhaseResult {
         if (terse && this.results[0].power === 0 && this.results[1].power === 0)
             return "";
         var r = this.results[0];
-        phaseString += (r.player + ": Power: " + r.power + '\r' + "Losses: " + r.shipsLost.toString() + '\r');
+        phaseString += (r.player + ": Power: " + r.power.toFixed(2) + '\n' + "Losses: " + r.shipsLost.toString() + '\n');
         r = this.results[1];
-        phaseString += (r.player + ": Power: " + r.power + '\r' + "Losses: " + r.shipsLost.toString() + '\r');
+        phaseString += (r.player + ": Power: " + r.power.toFixed(2) + '\n' + "Losses: " + r.shipsLost.toString() + '\n');
         return phaseString;
     }
 }
