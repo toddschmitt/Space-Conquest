@@ -61,11 +61,7 @@ class Ships {
     }
 
     isEmpty() {
-        var numberOfShips = 0;
-        this.shipTypes.forEach((s) => {
-            numberOfShips += this.shipCounts[s.name];
-        })
-        return numberOfShips < 1;
+        return this.getCountOfShips() < 1;
     }
 
     clone() {

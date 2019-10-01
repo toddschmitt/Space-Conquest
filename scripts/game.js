@@ -222,10 +222,6 @@ function createRandomHomePlanet(playerId) {
 
 }
 
-
-
-function processBattle(fleet1, fleet2) {}
-
 function advanceOneTurn() {
 	//Move in transit fleets closer to their destination
 	for (var i = 0; i < fleets.length; i++) {
@@ -271,7 +267,16 @@ function advanceOneTurn() {
 		}
 	});
 
-	//Make new planet owners 
+	//Remove empty fleets
+	fleets = fleets.filter((f) => !f.ships.isEmpty());
+
+	//Make new planet owners
+	planets.forEach(function (p) {
+		var planetFleets = fleets.filter((f) => f.location === p.id && f.remainingTransit < 1);
+		if (planetFleets.length === 1 && planetFleets[0].owner != p.owner) {
+			p.owner = planetFleets[0].owner;
+		}
+	});
 
 	//Process Native production and rebellion
 
@@ -307,4 +312,8 @@ function getCurrentPlayerFleetOnCurrentPlanet() {
 		return fleet[0];
 	else
 		return fleet;
+}
+
+function currentPlayerHasFleetsOnPlanet(planet) {
+	var fleet = fleets.filter((f) => f.owner === currentPlayer && !f.remainingTransit && f.location === planet.id);
 }

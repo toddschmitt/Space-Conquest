@@ -76,16 +76,33 @@ function drawFleet(fleet, planet) {
 
 }
 
-function drawPlanet(planet, selected) {
+function drawCircle(x, y, radius, color) {
 	ctx.beginPath();
-	ctx.arc(planet.x, planet.y, planetDiameter / 2, 0, Math.PI * 2, false);
-	if (selected)
-		ctx.fillStyle = "green";
-	else
-		ctx.fillStyle = "gray";
+	ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+	ctx.fillStyle = color;
 	ctx.fill();
 	ctx.closePath();
+}
 
+function drawPlanet(planet, selected) {
+	var color = "gray"
+	if (planet.owner === currentPlayer) {
+		color = currentPlayer === player1Id ? 'Red' : 'Blue';
+		drawCircle(planet.x, planet.y, planetDiameter / 2 + 1, color);
+	} else if (currentPlayerHasFleetsOnPlanet(planet)) {
+		if (planet.owner === player1Id) {
+			color = 'Red';
+		} else if (planet.owner === player2Id) {
+			color = 'Blue';
+		} else {
+			color = "White";
+		}
+		drawCircle(planet.x, planet.y, planetDiameter / 2 + 1, color);
+	}
+	color = selected ? "Green" : "Gray";
+	drawCircle(planet.x, planet.y, planetDiameter / 2, color);
+
+	ctx.shadowColor = "transparent";
 	ctx.fillStyle = "black";
 	ctx.textAlign = "center";
 	ctx.font = "12px Arial";
