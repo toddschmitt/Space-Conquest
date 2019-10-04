@@ -5,10 +5,12 @@ var currentTurn = 0;
 var planets = [];
 var spaceLanes = [];
 var fleets;
-var planetNames = ["Argys", "Bonton", "Crysis", "Dingus", "Elmo", "FoxDude", "GizmoWorld", "Hai", "Islendar", "Joko", "Klamata", "Lister"];
+var planetNames = ["Argys", "Bonton", "Crysis", "Dingus", "Elmo", "FoxDude", "GizmoWorld", "Hai", "Islendar", "Joko", "Klamata", "Lister",
+	"Merken", "Neschick", "Onessa", "Pandlova", "Qua 4", "Rourn"
+];
 var maxNumberPlanets = planetNames.length;
-var planetTechLevelDisto = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6];
-var maxX = 600;
+var planetTechLevelDisto = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6];
+var maxX = 700;
 var maxY = 600;
 var mapBorder = 20;
 var planetDiameter = 20;
@@ -69,7 +71,7 @@ function init() {
 
 function calculateSpaceLaneDistance(planetFrom, planetTo) {
 	//We're going to split the max path distance into 3 parts distance 1,2,3
-	const distanceThresholds = [longestPossiblePath / 4, longestPossiblePath / 2];
+	const distanceThresholds = [longestPossiblePath / 5, longestPossiblePath / 3];
 	const d = planetDistance(planetFrom, planetTo);
 	if (d < distanceThresholds[0])
 		return 1;
@@ -293,7 +295,7 @@ function advanceOneTurn() {
 	currentTurn += 1;
 
 	//Give the player their income
-	var creditsEarned = planets.filter((p) => p.owner === currentPlayer).map((p) => p.income).reduce((total, planet) => total + planet.income);
+	var creditsEarned = planets.filter((p) => p.owner === currentPlayer).map((p) => p.income).reduce((total, income) => total + income);
 
 	players[currentPlayerIndex].credits += creditsEarned;
 
