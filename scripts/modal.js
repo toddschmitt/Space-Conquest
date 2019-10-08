@@ -14,10 +14,15 @@ var MODAL_MODULE = (function () {
         modalElm.querySelector('.overlay').removeEventListener('click', hideAllModals);
     }
 
-    function showModal(e) {
-        var sourceName = e.srcElement.name;
+    //Public Section
+    function showModal(e, registration) {
         var selector;
-        current_open_modal_instance = registered_modals.filter((m) => m.elementName === sourceName)[0];
+        if (registration) {
+            current_open_modal_instance = registered_modals.filter((m) => m.elementName === registration)[0];
+        } else {
+            var sourceName = e.srcElement.name;
+            current_open_modal_instance = registered_modals.filter((m) => m.elementName === sourceName)[0];
+        }
         selector = current_open_modal_instance.selector;
 
         var modal = document.querySelector(selector);
@@ -29,9 +34,6 @@ var MODAL_MODULE = (function () {
         current_open_modal_instance.onOpen();
     }
 
-
-
-    //Public Section
     function register_modal(elementName, selector, onOpen, onClose) {
         registered_modals.push({
             'elementName': elementName,
@@ -53,12 +55,14 @@ var MODAL_MODULE = (function () {
         current_open_modal_selector.style.display = 'none';
         detachModalListeners(current_open_modal_selector);
         current_open_modal_selector = null;
-        current_open_modal_instance.onClose();
+        if (current_open_modal_instance.onClose)
+            current_open_modal_instance.onClose();
         current_open_modal_instance = null;
     }
 
     modal_module.init_modal = init_modal;
     modal_module.register_modal = register_modal;
     modal_module.hideAllModals = hideAllModals;
+    modal_module.showModal = showModal;
     return modal_module;
 }());

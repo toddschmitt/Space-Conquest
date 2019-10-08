@@ -21,6 +21,7 @@
 	<script src="scripts\drawing.js"></script>
 	<script src="scripts\build-ships-modal.js"></script>
 	<script src="scripts\send-ships-modal.js"></script>
+	<script src="scripts\messages-modal.js"></script>
 	<script src="scripts\battle.js"></script>
 	<script src="scripts\game.js"></script>
 	<div class="row" style="display: flex; flex-direction: row;">
@@ -147,6 +148,35 @@
 					</button>
 				</div>
 			</div>
+			<!-- End of Dynamic Section -->
+			<div class="modal_buttons">
+				<button title="Close" class="close_modal button button-sm">
+					<span>X</span>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal_message" style="display: none">
+		<div class="overlay"></div>
+		<div class="modal_content">
+			<!-- Dynamic Section -->
+			<div class="panel-header">
+				<h3 id="commentHeader">
+					</h2>
+			</div>
+			<div class="panel-body">
+				<span id="commentBodyText"></span>
+			</div>
+
+			<button title="Prev" class="button button-md" id="prevMessageButton">
+				<span>Prev</span>
+			</button>
+
+			<button title="Next" class="button button-md" id="nextMessageButton">
+				<span>Next</span>
+			</button>
+
 			<!-- End of Dynamic Section -->
 			<div class="modal_buttons">
 				<button title="Close" class="close_modal button button-sm">

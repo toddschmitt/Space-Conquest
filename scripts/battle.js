@@ -20,7 +20,7 @@ function resolveBattle(fleets) {
         calculateLuckModifiers(combatant2ShipCount < combatant1ShipCount)
     )
 
-    var battle = new Battle(currentTurn, [combatant1Fleet.clone(), combatant2Fleet.clone()], combatant1Fleet.location);
+    var battle = new Battle(currentTurn, [combatant1Fleet.clone(), combatant2Fleet.clone()], combatant1Fleet.location, [combatant1, combatant2]);
     for (var roundNum = 0; roundNum < 3; roundNum++) {
         var roundResult = new RoundResult(roundNum + 1);
         for (var phaseNum = 0; phaseNum < 3; phaseNum++) {
@@ -122,6 +122,8 @@ function removeBattleLossesFromFleet(damageFromAttack, fleet) {
     }
     return lossesShips;
 }
+
+/////////////////////Testing/////////////////////
 
 
 function test_battle() {

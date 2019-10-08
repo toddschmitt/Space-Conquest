@@ -92,7 +92,49 @@ class Ships {
 function Player(id) {
     this.id = id;
     this.credits = 0;
+}
 
+class Messages {
+    constructor() {
+        this.messages = [];
+        this.count = 0;
+    }
+
+    add(header, body, turn, recipients) {
+        this.messages.push(new Message(this.count, header, body, turn, recipients));
+        this.count++;
+    }
+
+    getLowestUnreadIdForPlayer(playerId) {
+        var id = this.messages.find((m) => m.recipients.includes(playerId) && !m.readBy.includes(playerId))
+        return id === undefined ? undefined : id.id;
+    }
+
+    readMessage(playerId, messageId) {
+        if (!this.messages[messageId].readBy.includes(playerId)) {
+            this.messages[messageId].readBy.push(playerId);
+        }
+        return this.messages[messageId];
+    }
+
+    getPreviousMessageId(playerId, messageId) {
+        var filtered = this.messages.filter((m) => m.id < messageId && m.recipients.includes(playerId));
+        return filtered.length < 1 ? undefined : filtered.map((f) => f.id).sort()[filtered.length - 1];
+    }
+
+    getNextMessageId(playerId, messageId) {
+        var filtered = this.messages.filter((m) => m.id > messageId && m.recipients.includes(playerId));
+        return filtered.length < 1 ? undefined : filtered.map((f) => f.id).sort()[0];
+    }
+}
+
+function Message(id, header, body, turn, recipients) {
+    this.header = header;
+    this.body = body;
+    this.turn = turn;
+    this.recipients = recipients;
+    this.readBy = [];
+    this.id = id;
 }
 
 function BattleLuckModifiers(attackModifier, defenseModifier) {
@@ -106,12 +148,13 @@ function BattleLuckContainer(combatant1Modifiers, combatant2Modifiers) {
 }
 
 class Battle {
-    constructor(turnNumber, startFleets, location) {
+    constructor(turnNumber, startFleets, location, combatants) {
         this.turnNumber = turnNumber;
         this.startFleets = startFleets;
         this.location = location;
         this.resultFleets = null;
         this.resultsByRound = [];
+        this.combatants = combatants;
 
     }
 
@@ -122,11 +165,6 @@ class Battle {
     setResultFleets(resultFleets) {
         this.resultFleets = resultFleets;
     }
-    resolve() {
-        this.shipCounts[shipType.name] += number;
-        //returns list of resulting fleets
-        //returns object of battle losses
-    }
 
     toString(terse) {
         return "Start Fleet " + this.startFleets[0].owner + ": " + this.startFleets[0].ships.toString() + '\n' +
@@ -134,6 +172,13 @@ class Battle {
             this.resultsByRound.map((r) => r.toString(terse)).join('\n') +
             "End Fleet " + this.resultFleets[0].owner + this.resultFleets[0].ships.toString() + '\n' +
             "End Fleet " + this.resultFleets[1].owner + this.resultFleets[1].ships.toString() + '\n';
+    }
+
+    toStringSummary() {
+        return "<b>Start Fleet</b> \n" + this.startFleets[0].owner + ": " + this.startFleets[0].ships.toString() + '\n' +
+            this.startFleets[1].owner + ": " + this.startFleets[1].ships.toString() + '\n\n' +
+            "<b>End Fleet</b> \n" + this.resultFleets[0].owner + this.resultFleets[0].ships.toString() + '\n' +
+            this.resultFleets[1].owner + this.resultFleets[1].ships.toString() + '\n';
     }
 }
 

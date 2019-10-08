@@ -13,6 +13,7 @@ var planetTechLevelDisto = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6
 var maxX = 700;
 var maxY = 600;
 var mapBorder = 20;
+var planetLabelHeight = 18;
 var planetDiameter = 20;
 var selectedPlanetIndex = null;
 var fleets = [];
@@ -25,10 +26,13 @@ var shipTypes = [new ShotGunShip(), new FighterShip()];
 var modals = MODAL_MODULE;
 var battles = [];
 var battleWinnerDamageReduction = .8;
+var gameOver = false;
+var messages = new Messages();
 
 function init() {
 	modals.register_modal('buildShip', '.modal_buildShips', onBuildShipModalOpen, onBuildShipModalClose);
 	modals.register_modal('sendShips', '.modal_sendShips', onSendShipModalOpen, onSendShipModalClose);
+	modals.register_modal('messageModal', '.modal_message', onMessageModalOpen, undefined);
 	modals.init_modal();
 
 	//Make the canvas and get the context
@@ -162,7 +166,7 @@ function createRandomPlanets(name) {
 		planet.id = i;
 		planet.name = planetNames[i];
 		planet.x = (getRndInteger(mapBorder, maxX - mapBorder));
-		planet.y = (getRndInteger(mapBorder, maxY - mapBorder));
+		planet.y = (getRndInteger(mapBorder + planetLabelHeight, maxY - mapBorder));
 		planet.techLevel = planetTechLevelDisto[i];
 		planet.income = 50 * planet.techLevel;
 		planet.owner = 'Native';
@@ -181,7 +185,8 @@ function createRandomPlanets(name) {
 		if (listOfTooClosePlanets.length > 0) {
 			for (var k = 0; k < listOfTooClosePlanets.length; k++) {
 				planets[listOfTooClosePlanets[k]].x = (getRndInteger(mapBorder, maxX - mapBorder));
-				planets[listOfTooClosePlanets[k]].y = (getRndInteger(mapBorder, maxY - mapBorder));
+				planet.y = (getRndInteger(mapBorder + planetLabelHeight, maxY - mapBorder));
+				planets[listOfTooClosePlanets[k]].y = (getRndInteger(mapBorder + planetLabelHeight, maxY - mapBorder));
 			}
 			listOfTooClosePlanets = [];
 		}
@@ -266,6 +271,15 @@ function advanceOneTurn() {
 		if (planetFleets.length > 1) {
 			var battle = resolveBattle(planetFleets);
 			battles.push(battle);
+			var recipients = [];
+			for (var i = 0; i < players.length; i++) {
+
+				if (battle.combatants.includes(players[i].id)) {
+					recipients.push(players[i].id)
+				}
+
+				messages.add("Battle at " + p.name, battle.toStringSummary(), currentTurn, recipients);
+			}
 		}
 	});
 
@@ -283,29 +297,50 @@ function advanceOneTurn() {
 	//Process Native production and rebellion
 
 	//Check for victory or loss
+	if (planets.filter((p) => p.owner === player1Id).length === 0 || planets.filter((p) => p.owner === player2Id).length === 0) {
+		gameOver = true;
 
+		//Show the game over dialog
+		//TODO
+	}
+
+	// Show players their messages 
+	//filter the list of messages that are to be received by the current player but haven't been read.
+	var messageId = messages.getLowestUnreadIdForPlayer(currentPlayer);
+	if (messageId !== undefined) {
+		messageCache = messages.readMessage(currentPlayer, messageId);
+		modals.showModal(null, 'messageModal');
+	}
+
+
+	//Put up the hotseat message
+
+	//Change which player is active
 	if (currentTurn != 0) {
 		currentPlayer = currentPlayer == player1Id ? player2Id : player1Id;
 	} else {
 		document.getElementsByName("startGameEndTurn")[0].innerHTML = 'End Turn';
 	}
 
-	var currentPlayerIndex = players.findIndex((p) => p.id === currentPlayer);
-
 	currentTurn += 1;
 
 	//Give the player their income
 	var creditsEarned = planets.filter((p) => p.owner === currentPlayer).map((p) => p.income).reduce((total, income) => total + income);
 
-	players[currentPlayerIndex].credits += creditsEarned;
+	getCurrentPlayer().credits += creditsEarned;
 
 	//Update the display
-	document.getElementsByName("credits")[0].value = players[currentPlayerIndex].credits;
+	document.getElementsByName("credits")[0].value = getCurrentPlayer().credits;
 	document.getElementsByName("turnNumber")[0].value = currentTurn;
 	document.getElementsByName("playerName")[0].value = currentPlayer;
 
 	//Redraw the map
 	drawMap();
+}
+
+function getCurrentPlayer() {
+	var currentPlayerIndex = players.findIndex((p) => p.id === currentPlayer);
+	return players[currentPlayerIndex];
 }
 
 function getCurrentPlayerFleetOnCurrentPlanet() {
@@ -318,4 +353,57 @@ function getCurrentPlayerFleetOnCurrentPlanet() {
 
 function currentPlayerHasFleetsOnPlanet(planet) {
 	var fleet = fleets.filter((f) => f.owner === currentPlayer && !f.remainingTransit && f.location === planet.id);
+}
+
+/////////////////Testing///////
+
+function testMessagingOfBattles() {
+	var ships = new Ships(shipTypes);
+	ships.add(new FighterShip(), 6);
+	var fleet = new Fleet('Red', 1, 0, ships);
+	fleets.push(fleet);
+
+	ships = new Ships(shipTypes);
+	ships.add(new FighterShip(), 3);
+	fleet = new Fleet('Blue', 1, 0, ships);
+	fleets.push(fleet);
+
+	advanceOneTurn();
+	fleets = [];
+}
+
+function testMessageQueue() {
+	messages.add("One", "Fried Rice", 1, [player1Id, player2Id]);
+	messages.add("Two", "General Tso's Chicken", 2, [player2Id]);
+	messages.add("Three", "Sweet and Sour", 3, [player2Id]);
+	messages.add("Four", "Orange Chicken", 4, [player1Id, player2Id]);
+	messages.add("Five", "Mongolian Beef", 5, [player1Id]);
+	messages.add("Six", "Crab Rangoon", 6, [player1Id]);
+	messages.add("Seven", "White Rice", 7, [player2Id]);
+
+	var id_player1;
+	var id_player2;
+	console.log("The lowest message for both players should be id 0");
+	console.log("Player1:" + messages.getLowestUnreadIdForPlayer(player1Id));
+	console.log("Player2:" + messages.getLowestUnreadIdForPlayer(player2Id));
+
+	console.log("Player 1 reads message 0");
+	var message = messages.readMessage(player1Id, 0);
+	console.log("Header:" + message.header + " Body:" + message.body);
+
+	console.log("Now player 1 1st unread message is 3")
+	console.log("Player1:" + messages.getLowestUnreadIdForPlayer(player1Id));
+	console.log("Player2:" + messages.getLowestUnreadIdForPlayer(player2Id));
+
+	console.log("Next message after 3 for Player 2 is 6")
+	console.log("Player2 next:" + messages.getNextMessageId(player2Id, 3));
+
+	console.log("Previous message before 3 for Player 1 is 0")
+	console.log("Player1 previous:" + messages.getPreviousMessageId(player1Id, 3));
+
+	console.log("Message after 6 for Player 2 is undefined");
+	console.log("Player2:" + messages.getNextMessageId(player2Id, 6));
+
+	console.log("Message after 5 for Player 1 is undefined");
+	console.log("Player1:" + messages.getNextMessageId(player1Id, 5))
 }
